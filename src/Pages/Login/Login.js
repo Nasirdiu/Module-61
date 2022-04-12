@@ -1,20 +1,30 @@
 import React, { useRef } from "react";
 import { Button, Form } from "react-bootstrap";
-import { Link, useNavigate } from "react-router-dom";
+import { useSignInWithEmailAndPassword } from "react-firebase-hooks/auth";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import auth from "../../firebace.init";
 
 const Login = () => {
   const emailRef = useRef("");
   const passwordRef = useRef("");
-    const navigate=useNavigate();
+  const [signInWithEmailAndPassword, user, loading, error] =
+    useSignInWithEmailAndPassword(auth);
+  const navigate = useNavigate();
+  const location = useLocation();
+  let from = location.state?.from?.pathname || "/";
+
+  if (user) {
+    navigate(from, { replace: true });
+  }
   const handleFrom = (event) => {
     event.preventDefault();
     const email = emailRef.current.value;
     const password = passwordRef.current.value;
-    console.log(email,password);
+    signInWithEmailAndPassword(email, password);
   };
-  const handleneagtive=()=>{
-      navigate(`/register`)
-  }
+  const handleneagtive = () => {
+    navigate(`/register`);
+  };
   return (
     <div className="container w-50 mx-auto">
       <h1 className="text-center text-info">Please Login</h1>
@@ -45,7 +55,16 @@ const Login = () => {
           Submit
         </Button>
       </Form>
-      <p>This is a register?<Link to='/register' onClick={handleneagtive} className="text-danger  text-decoration-none">Register Now</Link></p>
+      <p>
+        This is a register?
+        <Link
+          to="/register"
+          onClick={handleneagtive}
+          className="text-danger  text-decoration-none"
+        >
+          Register Now
+        </Link>
+      </p>
     </div>
   );
 };
